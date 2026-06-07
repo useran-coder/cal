@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f1b2d">
+<title>철판 중량 계산기</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0f1b2d; --navy2:#16273f; --panel:#1c3050; --line:#27425f; --ink:#eaf1fb; --sub:#8fa7c4; --amber:#f5a623; --amber2:#ffb942;
+    --green:#3fd07a; --red:#ff6b6b; --field:#0b1626;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Pretendard',-apple-system,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #1a2f4d 0%, transparent 60%),
+      linear-gradient(180deg,#0c1626 0%, #0a131f 100%);
+    color:var(--ink); min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:460px;margin:0 auto;padding:18px 16px 40px;}
+  header{display:flex;align-items:center;gap:11px;padding:6px 2px 16px;}
+  .logo{
+    width:44px;height:44px;border-radius:50%;flex:none;display:block;
+    object-fit:cover;
+    box-shadow:0 4px 14px rgba(225,32,42,.35);
+  }
+  header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:-.3px;}
+  header p{margin:1px 0 0;font-size:11.5px;color:var(--sub);font-weight:500;}
+
+  .tabs{display:flex;gap:8px;background:rgba(255,255,255,.04);padding:5px;border-radius:14px;margin-bottom:16px;}
+  .tab{
+    flex:1;border:none;background:transparent;color:var(--sub);
+    font-family:inherit;font-size:15px;font-weight:700;padding:11px 0;border-radius:10px;
+    cursor:pointer;transition:.18s;letter-spacing:-.2px;
+  }
+  .tab.on{background:linear-gradient(135deg,#1f3a5f,#16283f);color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+
+  .card{
+    background:linear-gradient(180deg,rgba(28,48,80,.55),rgba(18,32,52,.55));
+    border:1px solid var(--line);border-radius:18px;padding:16px 15px;margin-bottom:14px;
+    backdrop-filter:blur(6px);
+  }
+  .field{margin-bottom:13px;}
+  .field:last-child{margin-bottom:0;}
+  label{display:block;font-size:12.5px;color:var(--sub);font-weight:600;margin-bottom:6px;padding-left:2px;}
+  .unit{color:#5e779a;font-weight:500;}
+  input,select{
+    width:100%;background:var(--field);border:1px solid #20364f;border-radius:11px;
+    color:#fff;font-family:inherit;font-size:17px;font-weight:600;padding:13px 14px;
+    outline:none;transition:.15s;
+  }
+  input::placeholder{color:#46607e;font-weight:500;}
+  input:focus,select:focus{border-color:var(--amber);background:#0d1a2c;}
+  input[inputmode]{font-variant-numeric:tabular-nums;}
+  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238fa7c4' d='M6 8 0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:38px;}
+  .row{display:flex;gap:10px;}
+  .row .field{flex:1;}
+
+  .seg{display:flex;gap:7px;}
+  .seg button{
+    flex:1;background:var(--field);border:1px solid #20364f;color:var(--sub);
+    font-family:inherit;font-weight:700;font-size:13.5px;padding:11px 0;border-radius:10px;cursor:pointer;transition:.15s;
+  }
+  .seg button.on{border-color:var(--amber);color:var(--amber2);background:rgba(245,166,35,.1);}
+
+  .result{
+    background:linear-gradient(135deg,#12243c,#0d1a2c);
+    border:1px solid #2a466a;border-radius:18px;padding:18px 16px;margin-bottom:14px;
+    position:relative;overflow:hidden;
+  }
+  .result::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 120px at 100% 0,rgba(245,166,35,.12),transparent 70%);pointer-events:none;}
+  .res-label{font-size:12px;color:var(--sub);font-weight:600;margin-bottom:4px;}
+  .res-main{display:flex;align-items:baseline;gap:8px;}
+  .res-val{font-size:40px;font-weight:800;color:var(--amber2);letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;}
+  .res-unit{font-size:17px;color:var(--sub);font-weight:600;}
+  .res-sub{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.07);}
+  .res-sub .item{font-size:13px;}
+  .res-sub .k{color:var(--sub);font-weight:500;}
+  .res-sub .v{color:#fff;font-weight:700;font-variant-numeric:tabular-nums;}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+  .toggle-row span{font-size:14px;font-weight:700;color:var(--ink);}
+  .switch{width:44px;height:25px;border-radius:20px;background:#22384f;position:relative;transition:.2s;flex:none;}
+  .switch.on{background:var(--amber);}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s;}
+  .switch.on::after{left:22px;}
+  .collapse{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .collapse.open{max-height:520px;margin-top:14px;}
+
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+  .cmp .col{background:var(--field);border:1px solid #20364f;border-radius:12px;padding:12px 12px 13px;}
+  .cmp .col.best{border-color:var(--amber);box-shadow:0 0 0 1px rgba(245,166,35,.25) inset;}
+  .cmp .ctit{font-size:11.5px;color:var(--amber2);font-weight:700;margin-bottom:9px;}
+  .cmp .line{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+  .cmp .line .k{color:var(--sub);font-weight:500;}
+  .cmp .line .v{color:#dfe9f7;font-weight:600;font-variant-numeric:tabular-nums;}
+  .cmp .tot{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);}
+  .cmp .tot .k{font-size:12px;color:var(--sub);font-weight:600;}
+  .cmp .tot .v{font-size:16px;color:var(--amber2);font-weight:800;font-variant-numeric:tabular-nums;}
+  .diffbar{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:11px 14px;border-radius:11px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);}
+  .diffbar .k{font-size:12.5px;color:var(--ink);font-weight:700;}
+  .diffbar .v{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;}
+
+  .hint{font-size:11px;color:#5e779a;margin-top:9px;line-height:1.6;padding-left:2px;}
+  .density-pill{display:inline-block;font-size:11px;color:var(--amber2);background:rgba(245,166,35,.12);padding:2px 9px;border-radius:20px;font-weight:700;margin-left:6px;}
+  footer{text-align:center;font-size:10.5px;color:#3f5876;margin-top:18px;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <img class="logo" id="brandLogo" alt="DB">
+    <div>
+      <h1>철판 중량 계산기</h1>
+      <p>동방파스텍 · 판재 / 코일 중량 산출</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" id="tabPlate" onclick="setMode('plate')">판재</button>
+    <button class="tab" id="tabCoil" onclick="setMode('coil')">코일</button>
+  </div>
+
+  <!-- ===== 판재 ===== -->
+  <div id="modePlate">
+    <div class="card">
+      <div class="field">
+        <label>강종 <span class="density-pill" id="pDens">비중 7.89</span></label>
+        <select id="pMat" onchange="calc()">
+          <option value="7.89">EGI (전기아연도금) · 7.89</option>
+          <option value="7.85">PO (산세강판) · 7.85</option>
+          <option value="7.85">HR (열연) · 7.85</option>
+          <option value="7.85">GA (합금화용융아연) · 7.85</option>
+          <option value="7.93">STS201 · 7.93</option>
+          <option value="7.93">STS304 · 7.93</option>
+          <option value="7.7">STS439 · 7.7</option>
+          <option value="custom">기타 (비중 직접입력)</option>
+        </select>
+      </div>
+      <div class="field" id="pCustomWrap" style="display:none">
+        <label>비중 직접입력 <span class="unit">(g/cm³)</span></label>
+        <input id="pCustom" inputmode="decimal" placeholder="예) 7.85" oninput="calc()">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>두께 <span class="unit">(t, mm)</span></label>
+          <input id="pT" inputmode="decimal" placeholder="0" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>수량 <span class="unit">(매)</span></label>
+          <input id="pQ" inputmode="numeric" placeholder="1" oninput="calc()">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>폭 <span class="unit">(mm)</span></label>
+          <input id="pW" inputmode="decimal" placeholder="0" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>너비(길이) <span class="unit">(mm)</span></label>
+          <input id="pL" inputmode="decimal" placeholder="0" oninput="calc()">
+        </div>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="res-label">1매 중량</div>
+      <div class="res-main">
+        <span class="res-val" id="pOne">0</span><span class="res-unit">kg</span>
+      </div>
+      <div class="res-sub">
+        <div class="item"><span class="k">합계중량 </span><span class="v" id="pTotal">0</span> kg</div>
+        <div class="item"><span class="k">매당 </span><span class="v" id="pG">0</span> g</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toggle-row" onclick="toggle('pPrice')">
+        <span>단가 계산</span>
+        <div class="switch" id="pPriceSw"></div>
+      </div>
+      <div class="collapse" id="pPrice">
+        <div class="row">
+          <div class="field">
+            <label>철판단가 ① <span class="unit">(원/kg)</span></label>
+            <input id="pKg1" inputmode="numeric" placeholder="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>철판단가 ② <span class="unit">(원/kg)</span></label>
+            <input id="pKg2" inputmode="numeric" placeholder="0" oninput="calc()">
+          </div>
+        </div>
+        <div class="field">
+          <label>도금비 <span class="unit">(원/kg, 공통)</span></label>
+          <input id="pPlate" inputmode="numeric" placeholder="350" oninput="calc()">
+        </div>
+
+        <div class="cmp">
+          <div class="col" id="pCol1">
+            <div class="ctit">단가 ①</div>
+            <div class="line"><span class="k">재료비</span><span class="v"><span id="pMat1">0</span> 원</span></div>
+            <div class="line"><span class="k">도금비</span><span class="v"><span id="pPlate1">0</span> 원</span></div>
+            <div class="tot"><span class="k">합계</span><span class="v"><span id="pSum1">0</span></span></div>
+          </div>
+          <div class="col" id="pCol2">
+            <div class="ctit">단가 ②</div>
+            <div class="line"><span class="k">재료비</span><span class="v"><span id="pMat2">0</span> 원</span></div>
+            <div class="line"><span class="k">도금비</span><span class="v"><span id="pPlate2">0</span> 원</span></div>
+            <div class="tot"><span class="k">합계</span><span class="v"><span id="pSum2">0</span></span></div>
+          </div>
+        </div>
+        <div class="diffbar">
+          <span class="k">차액 (② − ①)</span>
+          <span class="v" id="pDiff">0 원</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 코일 ===== -->
+  <div id="modeCoil" style="display:none">
+    <div class="card">
+      <div class="field">
+        <label>강종 <span class="density-pill" id="cDens">비중 7.89</span></label>
+        <select id="cMat" onchange="calc()">
+          <option value="7.89">EGI (전기아연도금) · 7.89</option>
+          <option value="7.85">PO (산세강판) · 7.85</option>
+          <option value="7.85">HR (열연) · 7.85</option>
+          <option value="7.85">GA (합금화용융아연) · 7.85</option>
+          <option value="7.93">STS201 · 7.93</option>
+          <option value="7.93">STS304 · 7.93</option>
+          <option value="7.7">STS439 · 7.7</option>
+          <option value="custom">기타 (비중 직접입력)</option>
+        </select>
+      </div>
+      <div class="field" id="cCustomWrap" style="display:none">
+        <label>비중 직접입력 <span class="unit">(g/cm³)</span></label>
+        <input id="cCustom" inputmode="decimal" placeholder="예) 7.85" oninput="calc()">
+      </div>
+
+      <div class="field">
+        <label>계산 방식</label>
+        <div class="seg">
+          <button id="cmOD" class="on" onclick="setCoilMethod('od')">외경/내경</button>
+          <button id="cmLen" onclick="setCoilMethod('len')">길이</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>두께 <span class="unit">(t, mm)</span></label>
+          <input id="cT" inputmode="decimal" placeholder="0" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>폭 <span class="unit">(mm)</span></label>
+          <input id="cW" inputmode="decimal" placeholder="0" oninput="calc()">
+        </div>
+      </div>
+
+      <div id="cByOD">
+        <div class="row">
+          <div class="field">
+            <label>외경 OD <span class="unit">(mm)</span></label>
+            <input id="cOD" inputmode="decimal" placeholder="0" oninput="calc()">
+          </div>
+          <div class="field">
+            <label>내경 ID <span class="unit">(mm)</span></label>
+            <input id="cID" inputmode="decimal" placeholder="508" oninput="calc()">
+          </div>
+        </div>
+      </div>
+
+      <div id="cByLen" style="display:none">
+        <div class="field">
+          <label>코일 길이 <span class="unit">(m)</span></label>
+          <input id="cLen" inputmode="decimal" placeholder="0" oninput="calc()">
+        </div>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="res-label">코일 중량</div>
+      <div class="res-main">
+        <span class="res-val" id="cWeight">0</span><span class="res-unit">kg</span>
+      </div>
+      <div class="res-sub">
+        <div class="item"><span class="k" id="cExtraK">코일 길이 </span><span class="v" id="cExtra">0</span> <span id="cExtraU">m</span></div>
+        <div class="item"><span class="k">톤 </span><span class="v" id="cTon">0</span> ton</div>
+      </div>
+    </div>
+
+    <div class="hint">
+      · 외경/내경 방식: 단면적 π/4×(OD²−ID²) × 폭 × 비중 으로 중량 산출, 길이도 자동 계산<br>
+      · 내경(ID)은 통상 508mm 또는 610mm
+    </div>
+  </div>
+
+  <footer>
+    중량(kg) = 폭 × 너비 × 두께 × 비중 ÷ 1,000,000<br>
+    (주)동방파스텍 · 방화문부자재 사업부
+  </footer>
+</div>
+
+<script>
+  const LOGO_SRC='data:image/png;base64,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';
+  let mode='plate', coilMethod='od';
+  const $=id=>document.getElementById(id);
+  const num=el=>{const v=parseFloat(($(el).value||'').replace(/,/g,''));return isNaN(v)?0:v;};
+  const fmt=(n,d=2)=>{
+    if(!isFinite(n))return '0';
+    return n.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:d});
+  };
+
+  function density(matId,customId){
+    const sel=$(matId).value;
+    if(sel==='custom') return num(customId);
+    return parseFloat(sel);
+  }
+
+  function setMode(m){
+    mode=m;
+    $('modePlate').style.display = m==='plate'?'block':'none';
+    $('modeCoil').style.display  = m==='coil'?'block':'none';
+    $('tabPlate').classList.toggle('on',m==='plate');
+    $('tabCoil').classList.toggle('on',m==='coil');
+    calc();
+  }
+  function setCoilMethod(x){
+    coilMethod=x;
+    $('cmOD').classList.toggle('on',x==='od');
+    $('cmLen').classList.toggle('on',x==='len');
+    $('cByOD').style.display = x==='od'?'block':'none';
+    $('cByLen').style.display= x==='len'?'block':'none';
+    $('cExtraK').textContent = x==='od'?'코일 길이 ':'단면적 ';
+    $('cExtraU').textContent = x==='od'?'m':'mm²';
+    calc();
+  }
+  function toggle(id){
+    $(id).classList.toggle('open');
+    $(id+'Sw').classList.toggle('on');
+    calc();
+  }
+
+  function calc(){
+    // 비중 라벨 & custom 입력 표시
+    [['pMat','pCustom','pCustomWrap','pDens'],['cMat','cCustom','cCustomWrap','cDens']].forEach(([m,c,w,d])=>{
+      const isCustom=$(m).value==='custom';
+      $(w).style.display=isCustom?'block':'none';
+      const dn=isCustom?num(c):parseFloat($(m).value);
+      $(d).textContent='비중 '+(dn||'—');
+    });
+
+    // ----- 판재 -----
+    const pd=density('pMat','pCustom');
+    const t=num('pT'), w=num('pW'), l=num('pL');
+    let q=num('pQ'); if(q<=0) q=1;
+    const one=(w*l*t)*pd/1e6;          // kg, 1매
+    const total=one*q;
+    $('pOne').textContent=fmt(one,3);
+    $('pTotal').textContent=fmt(total,3);
+    $('pG').textContent=fmt(one*1000,1);
+
+    const kg1=num('pKg1'), kg2=num('pKg2');
+    const plate=($('pPlate').value==='')?350:num('pPlate');
+    const plateCost=total*plate;
+    const mat1=total*kg1, mat2=total*kg2;
+    const sum1=mat1+plateCost, sum2=mat2+plateCost;
+    $('pMat1').textContent=fmt(mat1,0);   $('pMat2').textContent=fmt(mat2,0);
+    $('pPlate1').textContent=fmt(plateCost,0); $('pPlate2').textContent=fmt(plateCost,0);
+    $('pSum1').textContent=fmt(sum1,0)+' 원'; $('pSum2').textContent=fmt(sum2,0)+' 원';
+    const diff=sum2-sum1;
+    const dEl=$('pDiff');
+    dEl.textContent=(diff>0?'+':'')+fmt(diff,0)+' 원';
+    dEl.style.color = diff>0?'#ff6b6b':(diff<0?'#3fd07a':'#ffb942');
+    // 더 저렴한 쪽 강조 (입력값 있을 때만)
+    const c1=$('pCol1'), c2=$('pCol2');
+    c1.classList.remove('best'); c2.classList.remove('best');
+    if(kg1>0 && kg2>0){ (sum1<=sum2?c1:c2).classList.add('best'); }
+
+    // ----- 코일 -----
+    const cd=density('cMat','cCustom');
+    const ct=num('cT'), cw=num('cW');
+    let cweight=0, extra=0;
+    if(coilMethod==='od'){
+      const od=num('cOD'), id=num('cID');
+      if(od>0 && od>id){
+        const area=Math.PI/4*(od*od-id*id);   // mm²
+        cweight=area*cw*cd/1e6;                // kg
+        extra = ct>0 ? area/ct/1000 : 0;       // 길이 m
+      }
+      $('cExtra').textContent=fmt(extra,1);
+    }else{
+      const len=num('cLen');                 // m
+      cweight=(cw*ct*len*1000)*cd/1e6;       // kg  (len m → mm)
+      extra = cw*ct;                         // 단면적 mm²
+      $('cExtra').textContent=fmt(extra,1);
+    }
+    if(!(cweight>0)) cweight=0;              // 음수/NaN/-0 → 0
+    $('cWeight').textContent=fmt(cweight, cweight<100 && cweight>0 ?2:0);
+    $('cTon').textContent=fmt(cweight/1000,3);
+  }
+
+  // 초기값
+  $('brandLogo').src=LOGO_SRC;
+  $('pPlate').value='350';
+  $('cID').value='508';
+  calc();
+</script>
+</body>
+</html>
