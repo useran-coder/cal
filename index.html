@@ -128,6 +128,7 @@
   .m-cancel{background:#22384f;color:var(--sub);}
   .m-ok{background:linear-gradient(135deg,#ff7b7b,#ff5b5b);color:#fff;}
   .density-pill{display:inline-block;font-size:11px;color:var(--amber2);background:rgba(245,166,35,.12);padding:2px 9px;border-radius:20px;font-weight:700;margin-left:6px;}
+  .ver{display:inline-block;margin-left:4px;font-size:10px;font-weight:700;color:var(--amber2);background:rgba(245,166,35,.14);border-radius:20px;padding:1px 7px;}
   footer{text-align:center;font-size:10.5px;color:#3f5876;margin-top:18px;line-height:1.6;}
 
   /* ===== 마우스 호버 효과 (터치기기에는 미적용) ===== */
@@ -161,7 +162,7 @@
     <img class="logo" id="brandLogo" alt="DB">
     <div>
       <h1>철판 중량 계산기</h1>
-      <p>동방파스텍 · 판재 / 코일 중량 산출</p>
+      <p>동방파스텍 · 판재 / 코일 중량 산출 <span class="ver">v6</span></p>
     </div>
   </header>
 
@@ -332,7 +333,7 @@
     <div class="hint">· 외경/내경: 단면적 π/4×(OD²−ID²) × 폭 × 비중 으로 중량 산출, 길이 자동 계산<br>· 내경(ID)은 통상 508mm 또는 610mm</div>
   </div>
 
-  <footer>중량(kg) = 폭 × 너비 × 두께 × 비중 ÷ 1,000,000<br>(주)동방파스텍 · 방화문부자재 사업부</footer>
+  <footer>중량(kg) = 폭 × 너비 × 두께 × 비중 ÷ 1,000,000<br>(주)동방파스텍 · 방화문부자재 사업부 · ver 6</footer>
 </div>
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal">
@@ -644,7 +645,7 @@
   function buildText(type){
     const {head,rows,name}=buildRows(type);
     const t=type==='plate'?'판재':'코일';
-    let s=`[철판 중량 계산기] ${t} 데이터 ${rows.length}건\n`;
+    let s=`[철판 중량 계산기] ${t} 저장데이터 ${DB[type].length}건\n`;
     DB[type].forEach((r,i)=>{
       if(type==='plate') s+=`\n${i+1}. ${r.mat} ${r.t}t ${fmt(r.w,0)}×${fmt(r.l,0)} ×${r.qty}매 → 합계 ${fmt(r.total,1)}kg`;
       else s+=`\n${i+1}. ${r.mat} ${r.t}t W${fmt(r.w,0)} ${r.method==='od'?'OD'+fmt(r.od,0)+'/ID'+fmt(r.idDia,0):'L'+fmt(r.len,0)+'m'} → ${fmt(r.weight,1)}kg`;
@@ -652,33 +653,60 @@
     return s;
   }
 
+  // 현재 화면에 입력/계산된 내용
+  function buildCurrentText(type){
+    const c=cur[type]; if(!c) return '';
+    if(type==='plate'){
+      if(!(c.total>0)) return '';
+      let s=`[철판 중량] 판재\n`;
+      s+=`${c.mat} (비중 ${c.dens}) ${c.t}t × ${fmt(c.w,0)} × ${fmt(c.l,0)} × ${fmt(c.qty,0)}매\n`;
+      s+=`1매 ${fmt(c.one,3)}kg · 합계 ${fmt(c.total,3)}kg (${fmt(c.total/1000,3)} ton)`;
+      if(c.plate>0) s+=`\n도금비 ${fmt(c.plate,0)}원/kg`;
+      if(c.kg1>0) s+=`\n단가① ${fmt(c.kg1,0)}원/kg → 합계 ${fmt(c.sum1,0)}원 (1매 ${fmt(c.sum1/c.qty,0)}원)`;
+      if(c.kg2>0) s+=`\n단가② ${fmt(c.kg2,0)}원/kg → 합계 ${fmt(c.sum2,0)}원 (1매 ${fmt(c.sum2/c.qty,0)}원)`;
+      if(c.kg1>0&&c.kg2>0){ const d=c.sum2-c.sum1; s+=`\n차액(②−①) ${(d>0?'+':'')+fmt(d,0)}원`; }
+      return s;
+    }
+    if(!(c.weight>0)) return '';
+    let s=`[철판 중량] 코일\n${c.mat} (비중 ${c.dens}) ${c.t}t × W${fmt(c.w,0)}`;
+    s+= c.method==='od' ? ` · OD${fmt(c.od,0)}/ID${fmt(c.idDia,0)}\n` : ` · 길이 ${fmt(c.len,0)}m\n`;
+    s+=`중량 ${fmt(c.weight,1)}kg (${fmt(c.ton,3)} ton)`;
+    if(c.method==='od') s+=` · 코일길이 ${fmt(c.lengthM,1)}m`;
+    return s;
+  }
+
   async function shareData(type){
-    if(!DB[type].length){toast('저장된 데이터가 없습니다');return;}
-    const {head,rows,name}=buildRows(type);
+    const curTxt=buildCurrentText(type);
+    const hasDB=DB[type].length>0;
+    if(!curTxt && !hasDB){ toast('공유할 내용이 없습니다'); return; }
+    const text = curTxt + (hasDB ? (curTxt?'\n\n──────────\n':'')+buildText(type) : '');
     const stamp=new Date().toISOString().slice(0,10);
-    // 파일 공유 시도 (모바일)
-    try{
-      let blob,fname;
-      if(window.XLSX){
-        const ws=XLSX.utils.aoa_to_sheet([head,...rows]);
-        const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,type==='plate'?'판재':'코일');
-        const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
-        blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}); fname=`${name}_${stamp}.xlsx`;
-      }else{
-        const csv=[head,...rows].map(r=>r.join(',')).join('\r\n');
-        blob=new Blob(['\uFEFF'+csv],{type:'text/csv'}); fname=`${name}_${stamp}.csv`;
-      }
-      const file=new File([blob],fname,{type:blob.type});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        await navigator.share({files:[file],title:'철판 중량 데이터',text:buildText(type)}); return;
-      }
-    }catch(e){ if(e&&e.name==='AbortError')return; }
+    // 저장 데이터가 있으면 엑셀 파일까지 첨부 (모바일 공유)
+    if(hasDB){
+      try{
+        const {head,rows,name}=buildRows(type);
+        let blob,fname;
+        if(window.XLSX){
+          const ws=XLSX.utils.aoa_to_sheet([head,...rows]);
+          const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,type==='plate'?'판재':'코일');
+          const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+          blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}); fname=`${name}_${stamp}.xlsx`;
+        }else{
+          const csv=[head,...rows].map(r=>r.join(',')).join('\r\n');
+          blob=new Blob(['\uFEFF'+csv],{type:'text/csv'}); fname=`${name}_${stamp}.csv`;
+        }
+        const file=new File([blob],fname,{type:blob.type});
+        if(navigator.canShare&&navigator.canShare({files:[file]})){
+          await navigator.share({files:[file],title:'철판 중량 데이터',text}); return;
+        }
+      }catch(e){ if(e&&e.name==='AbortError')return; }
+    }
     // 텍스트 공유
     try{
-      if(navigator.share){ await navigator.share({title:'철판 중량 데이터',text:buildText(type)}); return; }
+      if(navigator.share){ await navigator.share({title:'철판 중량 데이터',text}); return; }
     }catch(e){ if(e&&e.name==='AbortError')return; }
     // 클립보드 폴백
-    try{ await navigator.clipboard.writeText(buildText(type)); toast('클립보드에 복사했습니다'); }
+    try{ await navigator.clipboard.writeText(text); toast('클립보드에 복사했습니다'); }
     catch(e){ toast('공유를 지원하지 않는 환경입니다'); }
   }
 
