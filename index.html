@@ -49,7 +49,11 @@
   .result{background:linear-gradient(135deg,#12243c,#0d1a2c);border:1px solid var(--border2);border-radius:18px;padding:18px 16px;margin-bottom:14px;position:relative;overflow:hidden;}
   .result::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 120px at 100% 0,rgba(245,166,35,.12),transparent 70%);pointer-events:none;}
   .res-label{font-size:12px;color:var(--sub);font-weight:600;margin-bottom:4px;}
-  .res-main{display:flex;align-items:baseline;gap:8px;}
+  .res-main{display:flex;align-items:stretch;gap:14px;}
+  .res-col{min-width:0;}
+  .res-col.right{margin-left:auto;text-align:right;border-left:1px solid rgba(255,255,255,.09);padding-left:14px;}
+  .res-line{display:flex;align-items:baseline;gap:7px;white-space:nowrap;}
+  .res-col.right .res-line{justify-content:flex-end;}
   .res-val{font-size:40px;font-weight:800;color:var(--amber2);letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;}
   .res-unit{font-size:17px;color:var(--sub);font-weight:600;}
   .res-sub{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.07);}
@@ -72,24 +76,37 @@
   .cmp .line .k{color:var(--sub);font-weight:500;} .cmp .line .v{color:#dfe9f7;font-weight:600;font-variant-numeric:tabular-nums;}
   .cmp .tot{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);}
   .cmp .tot .k{font-size:12px;color:var(--sub);font-weight:600;} .cmp .tot .v{font-size:16px;color:var(--amber2);font-weight:800;font-variant-numeric:tabular-nums;}
+  .cmp .ea{display:flex;justify-content:space-between;align-items:baseline;margin-top:7px;padding-top:7px;border-top:1px dashed rgba(255,255,255,.1);}
+  .cmp .ea .k{font-size:11.5px;color:var(--sub);font-weight:600;} .cmp .ea .v{font-size:13px;color:#dfe9f7;font-weight:800;font-variant-numeric:tabular-nums;}
   .diffbar{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:11px 14px;border-radius:11px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);}
   .diffbar .k{font-size:12.5px;color:var(--ink);font-weight:700;} .diffbar .v{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;}
 
-  .save-btn{width:100%;border:none;border-radius:14px;padding:15px 0;font-family:inherit;font-size:16px;font-weight:800;letter-spacing:-.2px;cursor:pointer;color:#1a1206;background:linear-gradient(135deg,#ffb942,#f5a623);box-shadow:0 6px 18px rgba(245,166,35,.3);margin-bottom:14px;transition:.12s;}
+  .save-wrap{display:flex;gap:8px;margin-bottom:14px;}
+  .save-btn{flex:1;border:none;border-radius:14px;padding:15px 0;font-family:inherit;font-size:16px;font-weight:800;letter-spacing:-.2px;cursor:pointer;color:#1a1206;background:linear-gradient(135deg,#ffb942,#f5a623);box-shadow:0 6px 18px rgba(245,166,35,.3);transition:.12s;}
   .save-btn:active{transform:translateY(1px);filter:brightness(.96);}
+  .cancel-btn{flex:none;width:82px;border-radius:14px;border:1px solid var(--border2);background:#22384f;color:var(--sub);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+  .cancel-btn:active{transform:translateY(1px);}
+  .new-btn{flex:none;width:82px;border-radius:14px;border:1px solid rgba(96,165,250,.35);background:rgba(96,165,250,.13);color:#7fb2ff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+  .new-btn:active{transform:translateY(1px);}
 
   .rec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
   .rec-head .t{font-size:14px;font-weight:700;}
   .rec-head .cnt{font-size:12px;color:var(--amber2);background:rgba(245,166,35,.13);padding:2px 10px;border-radius:20px;font-weight:700;}
-  .rec-sum{font-size:13px;font-weight:700;color:var(--green);background:rgba(63,208,122,.1);border:1px solid rgba(63,208,122,.25);border-radius:10px;padding:9px 13px;margin-bottom:12px;display:none;}
+  .rec-sum{font-size:13px;font-weight:700;color:var(--green);background:rgba(63,208,122,.1);border:1px solid rgba(63,208,122,.25);border-radius:10px;padding:9px 13px;margin-bottom:12px;display:none;line-height:1.65;}
   .rec-sum.show{display:block;}
+  .rec-sum .sumline{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+  .rec-sum .sumline span{font-variant-numeric:tabular-nums;}
+  .rec-sum .sep{display:inline-block;margin:0 8px;opacity:.45;font-weight:600;}
   .rec-list{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0 -3px;padding:0 3px;}
-  .rec-row{display:flex;flex-direction:column;background:var(--field);border:1px solid #1d324c;border-radius:11px;padding:10px 12px;}
-  .rec-top{display:flex;align-items:center;gap:10px;}
-  .rec-top .l1{flex:1;min-width:0;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .rec-top .wt{font-size:14px;font-weight:800;color:var(--amber2);font-variant-numeric:tabular-nums;white-space:nowrap;}
-  .rec-top .del{flex:none;width:26px;height:26px;border-radius:8px;border:none;background:rgba(255,107,107,.12);color:var(--red);font-size:16px;font-weight:700;cursor:pointer;line-height:1;}
-  .rec-row .l2{font-size:11.5px;color:var(--sub);margin-top:5px;white-space:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .rec-row{display:grid;grid-template-columns:1fr auto auto;column-gap:10px;row-gap:5px;align-items:center;background:var(--field);border:1px solid #1d324c;border-radius:11px;padding:10px 12px;cursor:pointer;transition:.15s;}
+  .rec-row:active{background:#0e1c30;}
+  .rec-row.editing{border-color:var(--amber);box-shadow:0 0 0 1px rgba(245,166,35,.25) inset;}
+  .rec-row.editing .l1::after{content:"수정중";font-size:10.5px;color:var(--amber2);background:rgba(245,166,35,.15);border-radius:20px;padding:2px 7px;margin-left:7px;font-weight:700;}
+  .rec-row .l1{grid-column:1;min-width:0;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rec-row .wt{grid-column:2;font-size:14px;font-weight:800;color:var(--amber2);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;}
+  .rec-row .wt-ton{grid-column:2;font-size:11.5px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;}
+  .rec-row .del{grid-column:3;grid-row:1/3;align-self:center;width:26px;height:26px;border-radius:8px;border:none;background:rgba(255,107,107,.12);color:var(--red);font-size:16px;font-weight:700;cursor:pointer;line-height:1;}
+  .rec-row .l2{grid-column:1;font-size:11.5px;color:var(--sub);white-space:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
   .rec-row .l2::-webkit-scrollbar{display:none;}
   .empty{text-align:center;color:#5e779a;font-size:13px;padding:22px 0;}
   .rec-actions{display:flex;gap:8px;margin-top:13px;}
@@ -112,6 +129,30 @@
   .m-ok{background:linear-gradient(135deg,#ff7b7b,#ff5b5b);color:#fff;}
   .density-pill{display:inline-block;font-size:11px;color:var(--amber2);background:rgba(245,166,35,.12);padding:2px 9px;border-radius:20px;font-weight:700;margin-left:6px;}
   footer{text-align:center;font-size:10.5px;color:#3f5876;margin-top:18px;line-height:1.6;}
+
+  /* ===== 마우스 호버 효과 (터치기기에는 미적용) ===== */
+  @media (hover:hover) and (pointer:fine){
+    .tab:hover{color:#cfe0f5;background:rgba(255,255,255,.05);}
+    .tab.on:hover{background:linear-gradient(135deg,#27486f,#1b3049);}
+    .save-btn:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 9px 22px rgba(245,166,35,.42);}
+    .cancel-btn:hover{background:#2a4360;color:#cfe0f5;border-color:#365779;transform:translateY(-1px);}
+    .new-btn:hover{background:rgba(96,165,250,.22);color:#a9ceff;border-color:rgba(96,165,250,.55);transform:translateY(-1px);}
+    .rec-actions button:hover{transform:translateY(-1px);filter:brightness(1.12);}
+    .btn-xl:hover{background:rgba(63,208,122,.2);}
+    .btn-sh:hover{background:rgba(96,165,250,.2);}
+    .btn-rs:hover{background:rgba(255,107,107,.18);}
+    .seg button:hover{color:#cfe0f5;border-color:#2f4e70;background:#0f1f33;}
+    .seg button.on:hover{color:var(--amber2);border-color:var(--amber);background:rgba(245,166,35,.16);}
+    .rec-row:hover{border-color:#36567c;background:#0e1d31;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.25);}
+    .rec-row.editing:hover{border-color:var(--amber2);}
+    .rec-row .del:hover{background:rgba(255,107,107,.28);color:#fff;transform:scale(1.08);}
+    .toggle-row:hover span{color:#fff;}
+    .toggle-row:hover .switch{background:#2c4866;}
+    .toggle-row:hover .switch.on{background:var(--amber2);}
+    .modal-btns button:hover{filter:brightness(1.1);transform:translateY(-1px);}
+    input:hover,select:hover{border-color:#2f4e70;}
+  }
+  .tab,.save-btn,.cancel-btn,.new-btn,.rec-actions button,.seg button,.rec-row .del,.modal-btns button,.switch{transition:background .16s,color .16s,border-color .16s,box-shadow .16s,transform .12s,filter .16s;}
 </style>
 </head>
 <body>
@@ -160,11 +201,18 @@
     </div>
 
     <div class="result">
-      <div class="res-label">1매 중량</div>
-      <div class="res-main"><span class="res-val" id="pOne">0</span><span class="res-unit">kg</span></div>
+      <div class="res-main">
+        <div class="res-col">
+          <div class="res-label">1매 중량</div>
+          <div class="res-line"><span class="res-val" id="pOne">0</span><span class="res-unit">kg</span></div>
+        </div>
+        <div class="res-col right" id="pQtyBox" style="display:none">
+          <div class="res-label" id="pQtyK">수량 중량</div>
+          <div class="res-line"><span class="res-val" id="pQtyV">0</span><span class="res-unit" id="pQtyU">kg</span></div>
+        </div>
+      </div>
       <div class="res-sub">
-        <div class="item"><span class="k">합계중량 </span><span class="v" id="pTotal">0</span> kg</div>
-        <div class="item"><span class="k">매당 </span><span class="v" id="pG">0</span> g</div>
+        <div class="item" id="pFormula"></div>
       </div>
     </div>
 
@@ -182,19 +230,25 @@
             <div class="line"><span class="k">재료비</span><span class="v"><span id="pMat1">0</span> 원</span></div>
             <div class="line"><span class="k">도금비</span><span class="v"><span id="pPlate1">0</span> 원</span></div>
             <div class="tot"><span class="k">합계</span><span class="v"><span id="pSum1">0</span></span></div>
+            <div class="ea"><span class="k">1매 단가</span><span class="v"><span id="pEa1">0</span> 원</span></div>
           </div>
           <div class="col" id="pCol2">
             <div class="ctit">단가 ②</div>
             <div class="line"><span class="k">재료비</span><span class="v"><span id="pMat2">0</span> 원</span></div>
             <div class="line"><span class="k">도금비</span><span class="v"><span id="pPlate2">0</span> 원</span></div>
             <div class="tot"><span class="k">합계</span><span class="v"><span id="pSum2">0</span></span></div>
+            <div class="ea"><span class="k">1매 단가</span><span class="v"><span id="pEa2">0</span> 원</span></div>
           </div>
         </div>
         <div class="diffbar"><span class="k">차액 (② − ①)</span><span class="v" id="pDiff">0 원</span></div>
       </div>
     </div>
 
-    <button class="save-btn" onclick="saveRecord('plate')">＋ 저장하기</button>
+    <div class="save-wrap">
+      <button class="save-btn" id="plateSaveBtn" onclick="saveRecord('plate')">＋ 저장하기</button>
+      <button class="new-btn" onclick="newEntry('plate')">신규</button>
+      <button class="cancel-btn" id="plateCancelBtn" onclick="cancelEdit('plate')" style="display:none">취소</button>
+    </div>
 
     <div class="card">
       <div class="rec-head"><span class="t">저장된 데이터</span><span class="cnt" id="plateCnt">0건</span></div>
@@ -259,7 +313,11 @@
       </div>
     </div>
 
-    <button class="save-btn" onclick="saveRecord('coil')">＋ 저장하기</button>
+    <div class="save-wrap">
+      <button class="save-btn" id="coilSaveBtn" onclick="saveRecord('coil')">＋ 저장하기</button>
+      <button class="new-btn" onclick="newEntry('coil')">신규</button>
+      <button class="cancel-btn" id="coilCancelBtn" onclick="cancelEdit('coil')" style="display:none">취소</button>
+    </div>
 
     <div class="card">
       <div class="rec-head"><span class="t">저장된 데이터</span><span class="cnt" id="coilCnt">0건</span></div>
@@ -297,11 +355,16 @@
   let mode='plate', coilMethod='od';
   let DB={plate:[],coil:[]};
   let cur={plate:null,coil:null};
+  let editId={plate:null,coil:null};
 
   // ---- 저장소 ----
   function loadDB(){
     try{const r=localStorage.getItem('swc_db');if(r)DB=JSON.parse(r);}catch(e){}
     if(!DB.plate)DB.plate=[]; if(!DB.coil)DB.coil=[];
+    // [호환] 구버전 코일 레코드 : 내경(ID)이 레코드 id를 덮어써 중복되던 문제 보정
+    let base=Date.now(), fixed=false;
+    DB.coil.forEach((r,i)=>{ if(r.idDia===undefined){ r.idDia=r.id; r.id=base+i; fixed=true; } });
+    if(fixed) saveDB();
   }
   function saveDB(){ try{localStorage.setItem('swc_db',JSON.stringify(DB));}catch(e){} }
 
@@ -339,12 +402,33 @@
     const pd=density('pMat','pCustom'), t=num('pT'), w=num('pW'), l=num('pL');
     let q=num('pQ'); if(q<=0)q=1;
     const one=(w*l*t)*pd/1e6, total=one*q;
-    $('pOne').textContent=fmt(one,3); $('pTotal').textContent=fmt(total,3); $('pG').textContent=fmt(one*1000,1);
+    const sOne=fmt(one,3), sTot=fmt(total,total>=1000?1:3);
+    $('pOne').textContent=sOne;
+
+    // 수량 2매 이상 → 우측에 "N매 중량" (1매 중량과 동일 서식 · 중간 구분선)
+    if(q>1){
+      $('pQtyBox').style.display='block';
+      $('pQtyK').textContent=fmt(q,0)+'매 중량';
+      $('pQtyV').textContent=sTot; $('pQtyU').textContent='kg';
+    }else{
+      $('pQtyBox').style.display='none';
+    }
+    // 자릿수가 길어지면 두 값을 같은 크기로 축소 (줄바꿈 방지)
+    const ln=Math.max(sOne.length, q>1?sTot.length:0);
+    const fs=ln<=6?40:(ln<=8?33:(ln<=10?27:23));
+    $('pOne').style.fontSize=fs+'px'; $('pQtyV').style.fontSize=fs+'px';
+
+    // 합계 표시줄 : 강종 두께 × 폭 × 너비(길이) × 수량 = 합계중량
+    const spec=`${matName('pMat')} ${t||0}t × ${fmt(w,0)} × ${fmt(l,0)} × ${fmt(q,0)}매`;
+    $('pFormula').innerHTML=`<span class="k">${spec} = </span><span class="v">${sTot}</span> kg`
+      +`<span class="k"> · <span class="v">${fmt(total/1000,3)}</span> ton</span>`;
+
     const kg1=num('pKg1'), kg2=num('pKg2'), plate=num('pPlate');
     const plateCost=total*plate, mat1=total*kg1, mat2=total*kg2, sum1=mat1+plateCost, sum2=mat2+plateCost;
     $('pMat1').textContent=fmt(mat1,0); $('pMat2').textContent=fmt(mat2,0);
     $('pPlate1').textContent=fmt(plateCost,0); $('pPlate2').textContent=fmt(plateCost,0);
     $('pSum1').textContent=fmt(sum1,0)+' 원'; $('pSum2').textContent=fmt(sum2,0)+' 원';
+    $('pEa1').textContent=fmt(sum1/q,0); $('pEa2').textContent=fmt(sum2/q,0);   // 1매당 단가
     const diff=sum2-sum1, dEl=$('pDiff');
     if(kg1>0&&kg2>0){
       dEl.textContent=(diff>0?'+':'')+fmt(diff,0)+' 원';
@@ -370,7 +454,7 @@
     if(!(cweight>0))cweight=0;
     $('cWeight').textContent=fmt(cweight,cweight<100&&cweight>0?2:0);
     $('cTon').textContent=fmt(cweight/1000,3);
-    cur.coil={mat:matName('cMat'),dens:cd,method:coilMethod,t:ct,w:cw,od,id,len,weight:cweight,lengthM:(coilMethod==='od'?extra:len),ton:cweight/1000};
+    cur.coil={mat:matName('cMat'),dens:cd,method:coilMethod,t:ct,w:cw,od,idDia:id,len,weight:cweight,lengthM:(coilMethod==='od'?extra:len),ton:cweight/1000};
   }
 
   // ---- 저장 ----
@@ -379,10 +463,77 @@
     const c=cur[type];
     const wt = type==='plate'? c.total : c.weight;
     if(!(wt>0)){toast('값을 입력하세요');return;}
-    const rec=Object.assign({id:Date.now(),time:nowStr()},c);
+    const eid=editId[type];
+    if(eid!==null){
+      const i=DB[type].findIndex(r=>r.id===eid);
+      if(i>=0){
+        DB[type][i]=Object.assign({},c,{id:eid,time:nowStr()});
+        setEdit(type,null); saveDB(); render(type); toast('수정되었습니다'); return;
+      }
+      setEdit(type,null);   // 대상이 사라진 경우 → 신규 저장으로 진행
+    }
+    const rec=Object.assign({},c,{id:Date.now()+Math.floor(Math.random()*1000),time:nowStr()});
     DB[type].unshift(rec); saveDB(); render(type); toast('저장되었습니다 ('+DB[type].length+'건)');
   }
-  function deleteRecord(type,id){ DB[type]=DB[type].filter(r=>r.id!==id); saveDB(); render(type); }
+  function deleteRecord(type,id,ev){
+    if(ev)ev.stopPropagation();
+    if(editId[type]===id) setEdit(type,null);
+    DB[type]=DB[type].filter(r=>r.id!==id); saveDB(); render(type);
+  }
+
+  // ---- 저장 리스트 → 다시 불러와 수정 ----
+  function setEdit(type,id){
+    editId[type]=id;
+    const pre=type==='plate'?'plate':'coil';
+    $(pre+'SaveBtn').textContent = id!==null ? '✓ 수정 저장' : '＋ 저장하기';
+    $(pre+'CancelBtn').style.display = id!==null ? 'block' : 'none';
+  }
+  function cancelEdit(type){ setEdit(type,null); render(type); toast('수정을 취소했습니다'); }
+
+  // ---- 신규 입력 (입력값 비우고 수정모드 해제) ----
+  function newEntry(type){
+    if(type==='plate'){
+      ['pT','pW','pL','pQ','pKg1','pKg2','pPlate','pCustom'].forEach(id=>$(id).value='');
+      $('pMat').selectedIndex=0;
+      if($('pPrice').classList.contains('open')) toggle('pPrice');
+      $('pT').focus();
+    }else{
+      ['cT','cW','cOD','cLen','cCustom'].forEach(id=>$(id).value='');
+      $('cMat').selectedIndex=0; $('cID').value='508'; setCoilMethod('od');
+      $('cT').focus();
+    }
+    setEdit(type,null); calc(); render(type); toast('신규 입력');
+  }
+  function setMatSelect(selId,customId,name,dens){
+    const s=$(selId); let hit=-1;
+    for(let i=0;i<s.options.length;i++){
+      const o=s.options[i];
+      if(o.value!=='custom' && o.text.split(' (')[0].split(' ·')[0]===name && parseFloat(o.value)===dens){hit=i;break;}
+    }
+    if(hit>=0){ s.selectedIndex=hit; }
+    else { s.value='custom'; $(customId).value=dens||''; }
+  }
+  function editRecord(type,id){
+    if(editId[type]===id){ cancelEdit(type); return; }   // 같은 항목 재선택 → 해제
+    const r=DB[type].find(x=>x.id===id); if(!r)return;
+    if(type==='plate'){
+      setMatSelect('pMat','pCustom',r.mat,r.dens);
+      $('pT').value=r.t; $('pW').value=r.w; $('pL').value=r.l; $('pQ').value=r.qty;
+      $('pKg1').value=r.kg1||''; $('pKg2').value=r.kg2||''; $('pPlate').value=r.plate||'';
+      // 단가 데이터가 있으면 펼치고, 없으면 접은 상태로
+      const hasPrice=(r.kg1>0||r.kg2>0||r.plate>0), opened=$('pPrice').classList.contains('open');
+      if(hasPrice!==opened) toggle('pPrice');
+    }else{
+      setMatSelect('cMat','cCustom',r.mat,r.dens);
+      setCoilMethod(r.method||'od');
+      $('cT').value=r.t; $('cW').value=r.w;
+      if(r.method==='od'){ $('cOD').value=r.od; $('cID').value=r.idDia; }
+      else { $('cLen').value=r.len; }
+    }
+    setEdit(type,id); calc(); render(type);
+    window.scrollTo({top:0,behavior:'smooth'});
+    toast('수정 모드 · 값 변경 후 [수정 저장]');
+  }
 
   // 커스텀 확인 모달 (PWA/미리보기에서 native confirm 차단 대비)
   let _modalCb=null;
@@ -393,7 +544,7 @@
   function clearData(type){
     if(!DB[type].length){toast('저장된 데이터가 없습니다');return;}
     askConfirm((type==='plate'?'판재':'코일')+' 저장 데이터 '+DB[type].length+'건을 모두 삭제할까요?',()=>{
-      DB[type]=[]; saveDB(); render(type); toast('초기화되었습니다');
+      DB[type]=[]; setEdit(type,null); saveDB(); render(type); toast('초기화되었습니다');
     });
   }
   function render(type){
@@ -407,17 +558,17 @@
     }
     // 합계중량
     const sumW=DB[type].reduce((a,r)=>a+(type==='plate'?r.total:r.weight),0);
-    let sumTxt='합계중량 '+fmt(sumW,1)+' kg ('+fmt(sumW/1000,3)+' ton)';
+    let sumTxt='<div class="sumline"><span>합계중량</span><span>'+fmt(sumW,1)+' kg<span class="sep">|</span>'+fmt(sumW/1000,3)+' ton</span></div>';
     if(type==='plate'){
       const s1=DB.plate.reduce((a,r)=>a+(r.kg1>0?r.sum1:0),0);
       const s2=DB.plate.reduce((a,r)=>a+(r.kg2>0?r.sum2:0),0);
-      if(s2>0) sumTxt+=' · 단가① 합계 '+fmt(s1,0)+'원 / 단가② '+fmt(s2,0)+'원';
-      else if(s1>0) sumTxt+=' · 단가 합계 '+fmt(s1,0)+'원';
+      if(s2>0) sumTxt+='<div class="sumline"><span>단가 합계</span><span>①'+fmt(s1,0)+'원<span class="sep">|</span>②'+fmt(s2,0)+'원</span></div>';
+      else if(s1>0) sumTxt+='<div class="sumline"><span>단가 합계</span><span>'+fmt(s1,0)+'원</span></div>';
     }
-    sumEl.textContent=sumTxt; sumEl.classList.add('show');
+    sumEl.innerHTML=sumTxt; sumEl.classList.add('show');
 
     list.innerHTML=DB[type].map(r=>{
-      let l1,l2,wt;
+      let l1,l2,wt,tn;
       if(type==='plate'){
         l1=`${r.mat} ${r.t}t · ${fmt(r.w,0)}×${fmt(r.l,0)} ×${r.qty}매`;
         let price='';
@@ -428,13 +579,14 @@
           price=` · 단가① 합계 ${fmt(r.sum1,0)}원`;
         }
         l2=`1매 ${fmt(r.one,2)}kg${price} · ${r.time}`;
-        wt=fmt(r.total,1)+'kg';
+        wt=fmt(r.total,1)+'kg'; tn=fmt(r.total/1000,3)+' ton';
       }else{
-        l1=`${r.mat} ${r.t}t · W${fmt(r.w,0)}`+(r.method==='od'?` · OD${fmt(r.od,0)}/ID${fmt(r.id,0)}`:` · L${fmt(r.len,0)}m`);
-        l2=`길이 ${fmt(r.lengthM,1)}m · ${fmt(r.ton,3)}ton · ${r.time}`;
-        wt=fmt(r.weight,r.weight<100?2:0)+'kg';
+        l1=`${r.mat} ${r.t}t · W${fmt(r.w,0)}`+(r.method==='od'?` · OD${fmt(r.od,0)}/ID${fmt(r.idDia,0)}`:` · L${fmt(r.len,0)}m`);
+        l2=`길이 ${fmt(r.lengthM,1)}m · ${r.time}`;
+        wt=fmt(r.weight,r.weight<100?2:0)+'kg'; tn=fmt(r.ton,3)+' ton';
       }
-      return `<div class="rec-row"><div class="rec-top"><div class="l1">${l1}</div><div class="wt">${wt}</div><button class="del" onclick="deleteRecord('${type}',${r.id})">×</button></div><div class="l2">${l2}</div></div>`;
+      const ed=editId[type]===r.id?' editing':'';
+      return `<div class="rec-row${ed}" onclick="editRecord('${type}',${r.id})"><div class="l1">${l1}</div><div class="wt">${wt}</div><button class="del" onclick="deleteRecord('${type}',${r.id},event)">×</button><div class="l2">${l2}</div><div class="wt-ton">${tn}</div></div>`;
     }).join('');
   }
 
@@ -462,7 +614,7 @@
     }else{
       const recs=DB.coil;
       const head=['일시','강종','비중','계산방식','두께(t,mm)','폭(mm)','외경OD(mm)','내경ID(mm)','길이(m)','중량(kg)','톤(ton)'];
-      const rows=recs.map(r=>[r.time,r.mat,r.dens,r.method==='od'?'외경/내경':'길이',r.t,r.w,r.od,r.id,round(r.lengthM,1),round(r.weight,1),round(r.ton,3)]);
+      const rows=recs.map(r=>[r.time,r.mat,r.dens,r.method==='od'?'외경/내경':'길이',r.t,r.w,r.od,r.idDia,round(r.lengthM,1),round(r.weight,1),round(r.ton,3)]);
       const sumW=recs.reduce((a,r)=>a+r.weight,0);
       const tot=new Array(11).fill(''); tot[0]='합계'; tot[9]=round(sumW,1); tot[10]=round(sumW/1000,3);
       rows.push(tot);
@@ -495,7 +647,7 @@
     let s=`[철판 중량 계산기] ${t} 데이터 ${rows.length}건\n`;
     DB[type].forEach((r,i)=>{
       if(type==='plate') s+=`\n${i+1}. ${r.mat} ${r.t}t ${fmt(r.w,0)}×${fmt(r.l,0)} ×${r.qty}매 → 합계 ${fmt(r.total,1)}kg`;
-      else s+=`\n${i+1}. ${r.mat} ${r.t}t W${fmt(r.w,0)} ${r.method==='od'?'OD'+fmt(r.od,0)+'/ID'+fmt(r.id,0):'L'+fmt(r.len,0)+'m'} → ${fmt(r.weight,1)}kg`;
+      else s+=`\n${i+1}. ${r.mat} ${r.t}t W${fmt(r.w,0)} ${r.method==='od'?'OD'+fmt(r.od,0)+'/ID'+fmt(r.idDia,0):'L'+fmt(r.len,0)+'m'} → ${fmt(r.weight,1)}kg`;
     });
     return s;
   }
